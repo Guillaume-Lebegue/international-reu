@@ -28,3 +28,36 @@ export const createUser = async (ctx: RouterContext, newUser: JsonUser) => {
     return send(ctx, 500, "Server error");
   }
 };
+
+export const getAllUser = async (ctx: RouterContext) => {
+  try {
+    const users = await User.all();
+    return send(ctx, 200, { users });
+  } catch (err) {
+    console.error("Getting all users: ", err);
+    return send(ctx, 500, "Server error");
+  }
+};
+
+export const updateOffset = async (
+  ctx: RouterContext,
+  userId?: string,
+  newOffset?: number,
+) => {
+  if (!userId || !newOffset) return send(ctx, 400, "Missing parameter");
+
+  const user = await User.where("_id", userId).first();
+
+  if (!user) {
+    return send(ctx, 404, "User not found");
+  }
+
+  try {
+    user.timeOffset = newOffset;
+    user.save();
+    return send(ctx, 200, user);
+  } catch (err) {
+    console.error(`Update offset, for user ${user._id}: `, err);
+    return send(ctx, 500, "Server error");
+  }
+};

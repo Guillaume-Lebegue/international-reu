@@ -16,13 +16,18 @@ const authMiddle: Middleware = async (ctx, next) => {
   try {
     await decodeJwt(token);
   } catch (err) {
-    console.error("Invalid auth token: ", err);
+    if (
+      err.message !=
+        "The jwt's signature does not match the verification signature."
+    ) {
+      console.error("Invalid auth token: ", err);
+    }
     ctx.response.status = 401;
     ctx.response.body = "Invalid token";
     return;
   }
 
-  next();
+  await next();
 };
 
 export default authMiddle;

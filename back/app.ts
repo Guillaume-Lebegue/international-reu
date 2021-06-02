@@ -14,7 +14,9 @@ const app = new Application();
 app.use(async (ctx, next) => {
   await next();
   const rt = ctx.response.headers.get("X-Response-Time");
-  console.info(`${ctx.request.method} ${ctx.request.url} - ${rt}`);
+  console.info(
+    `${ctx.request.method} ${ctx.request.url} - ${rt} : ${ctx.response.status}`,
+  );
 });
 
 // Timing
@@ -32,7 +34,7 @@ app.addEventListener("listen", (app) => {
   console.info(`Server started on ${app.port}`);
 });
 
-const port = Number(Deno.env.get("PORT")) || 3000;
+const port = Number(Deno.env.get("PORT")) || 8080;
 await app.listen({
   port,
 });

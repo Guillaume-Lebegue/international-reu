@@ -9,7 +9,7 @@ router.post("/login", async (ctx) => {
     ? (await ctx.request.body({ type: "json" }).value)?.password
     : undefined;
 
-  login(ctx, password);
+  await login(ctx, password);
 });
 
 export default router;
