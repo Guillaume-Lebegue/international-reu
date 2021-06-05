@@ -4,6 +4,7 @@ import { send } from "../utils.ts";
 
 import {
   createUser,
+  deleteUser,
   getAllUser,
   updateOffset,
 } from "../controlers/user.controler.ts";
@@ -22,6 +23,12 @@ router.post("/", async (ctx) => {
 
 router.get("/", async (ctx) => {
   await getAllUser(ctx);
+});
+
+router.delete("/:id", async (ctx) => {
+  const userId = ctx.params.id;
+
+  await deleteUser(ctx, userId);
 });
 
 router.post("/:id/offset", async (ctx) => {

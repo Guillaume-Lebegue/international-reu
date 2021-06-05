@@ -8,8 +8,8 @@ export const login = (password: string): Promise<AxiosResponse<string>> => {
   return axios.post<string>(`${apiUrl}auth/login`, { password });
 };
 
-export const getAllUsers = (token: string): Promise<AxiosResponse<User>> => {
-  return axios.get<User>(`${apiUrl}user/`, {
+export const getAllUsers = (token: string): Promise<AxiosResponse<{ users: User[] }>> => {
+  return axios.get<{ users: User[] }>(`${apiUrl}user/`, {
     headers: {
       Authorization: `Bearer ${token}`,
     }
@@ -18,6 +18,14 @@ export const getAllUsers = (token: string): Promise<AxiosResponse<User>> => {
 
 export const createUser = (token: string, newUser: User): Promise<AxiosResponse<User>> => {
   return axios.post<User>(`${apiUrl}user/`, newUser, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+};
+
+export const deleteUser = (token: string, userId: string): Promise<AxiosResponse<void>> => {
+  return axios.delete(`${apiUrl}user/${userId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     }

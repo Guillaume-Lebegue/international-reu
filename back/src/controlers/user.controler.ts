@@ -5,7 +5,8 @@ import { send } from "../utils.ts";
 
 export const createUser = async (ctx: RouterContext, newUser: JsonUser) => {
   if (
-    !newUser.email || !newUser.name || !newUser.surname || !newUser.timeOffset
+    !newUser.email || !newUser.name || !newUser.surname ||
+    newUser.timeOffset === undefined
   ) {
     return send(ctx, 400, "Missing parameter");
   }
@@ -35,6 +36,22 @@ export const getAllUser = async (ctx: RouterContext) => {
     return send(ctx, 200, { users });
   } catch (err) {
     console.error("Getting all users: ", err);
+    return send(ctx, 500, "Server error");
+  }
+};
+
+export const deleteUser = async (ctx: RouterContext, userId?: string) => {
+  if (!userId) return send(ctx, 400, "Missing parameter");
+
+  try {
+    const user = await User.where("_id", userId).first();
+
+    if (!user) return send(ctx, 404, "User not found");
+
+    await user.delete();
+    return send(ctx, 200, "OK");
+  } catch (err) {
+    console.error(`delete user: ${userId}: `, err);
     return send(ctx, 500, "Server error");
   }
 };

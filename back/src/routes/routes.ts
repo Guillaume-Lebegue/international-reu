@@ -11,6 +11,7 @@ const router = new Router();
 router.use(errorMiddle);
 
 router.use("/api/auth", authRoute.routes(), authRoute.allowedMethods());
+
 router.use("/api/user", authMiddle);
 router.use("/api/user", userRoute.routes(), userRoute.allowedMethods());
 

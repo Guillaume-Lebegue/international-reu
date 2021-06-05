@@ -22,7 +22,7 @@ export interface JsonUser {
   name: string;
   surname: string;
   email: string;
-  timeOffset: string;
+  timeOffset: number;
 }
 
 export default User;

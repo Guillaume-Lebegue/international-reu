@@ -30,7 +30,7 @@ app.use(async (ctx, next) => {
 
 app.use(oakCors({
   origin: Deno.env.get("ORIGIN"),
-  methods: ["GET", "PUT", "POST", "OPTION"],
+  methods: ["GET", "PUT", "POST", "OPTION", "DELETE"],
 }));
 app.use(router.routes());
 app.use(router.allowedMethods());
