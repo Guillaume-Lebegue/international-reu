@@ -1,29 +1,17 @@
 import { ChangeEvent, FormEvent, useContext, useState } from 'react';
 import { Form, Button, Spinner } from 'react-bootstrap';
-
-import rawTimezones from '../../timezone.json';
+import moment from 'moment-timezone';
 
 import { createUser } from '../../services/Api.Service';
 import { UserContext } from '../../contexts/User.context';
-
-const timezones = (rawTimezones as Timezone[]).sort((a, b) => a.offset - b.offset);
-
-interface Timezone {
-  value: string;
-  abbr: string;
-  offset: number;
-  isdst: boolean;
-  text: string;
-  utc: string[];
-};
 
 export interface Props {
   onClose: () => void;
 }
 
 const getAllTimezones = () =>
-  (timezones as Timezone[]).map((timezone, index) => (
-    <option value={timezone.offset} key={index}>{timezone.text}</option>
+  moment.tz.names().map((timezone, index) => (
+    <option value={timezone} key={index}>{timezone}</option>
   ));
 
 export default function CreateUser({ onClose }: Props): JSX.Element {
@@ -32,21 +20,29 @@ export default function CreateUser({ onClose }: Props): JSX.Element {
   const [name, setName] = useState<string>('');
   const [surname, setSurname] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [offset, setOffset] = useState<number>(0);
-  const [error, setError] = useState<{name: string | undefined; surname: string | undefined; email: string | undefined}>({name: undefined, surname: undefined, email: undefined});
+  const [offset, setOffset] = useState<string>('');
+  const [error, setError] = useState<{name: string | undefined; surname: string | undefined; email: string | undefined; offset: string | undefined}>({name: undefined, surname: undefined, email: undefined, offset: undefined});
 
   const handleCreate = async (e: FormEvent) => {
     e.preventDefault();
-    if (validateName(name) || validateSurname(surname) || validateEmail(email) || !userContext.isAuth || !userContext.token)
+    if (validateName(name) || validateSurname(surname) || validateEmail(email) || validateTimezone(offset) || !userContext.isAuth || !userContext.token)
       return;
     
     setLoading(true);
     try {
+      const numOffset = moment.tz.zone(offset)?.utcOffset(Date.now());
+      if (!numOffset) {
+        const newError = {...error};
+        newError.offset = 'Invalid timezone';
+        setError(newError);
+        return;
+      }
+
       await createUser(userContext.token, {
         name,
         surname,
         email,
-        timeOffset: offset
+        timeOffset: numOffset,
       });
       onClose();
     } catch (err) {
@@ -109,10 +105,21 @@ export default function CreateUser({ onClose }: Props): JSX.Element {
   };
   
   const handleTimezone = (e: ChangeEvent<HTMLInputElement>) => {
-    setOffset(Number.parseFloat(e.target.value));
+    setOffset(e.target.value);
+    validateTimezone(e.target.value);
   };
 
-  const isInvalid = !!error?.name || !!error?.surname || !!error?.email || !name || !surname || !email;
+  const validateTimezone = (timezone: string) => {
+    const newError = {...error};
+    if (!timezone)
+      newError.offset = 'Décallage requis';
+    else
+      newError.offset = '';
+    setError(newError);
+    return !!newError.offset;
+  };
+
+  const isInvalid = !!error.name || !!error.surname || !!error.email || !!error.offset || !name || !surname || !email || !offset;
 
   return (
     <div>
@@ -135,9 +142,11 @@ export default function CreateUser({ onClose }: Props): JSX.Element {
         </Form.Group>
         <Form.Group>
           <Form.Label>Décalage horraire: </Form.Label>
-          <Form.Control as="select" value={offset} onChange={handleTimezone}>
+          <Form.Control as="select" value={offset} onChange={handleTimezone} isInvalid={!!error.offset}>
+            <option value=''>Choisir une zone</option>
             {getAllTimezones()}
           </Form.Control>
+          <Form.Control.Feedback type="invalid">{error.offset}</Form.Control.Feedback>
         </Form.Group>
         <div className='float-right'>
           <Button
