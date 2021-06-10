@@ -32,9 +32,10 @@ export const deleteUser = (token: string, userId: string): Promise<AxiosResponse
   });
 };
 
-export const updateOffset = (token: string, userId: string, newOffset: number): Promise<AxiosResponse<User>> => {
+export const updateOffset = (token: string, userId: string, newOffset: number, newTimezone: string): Promise<AxiosResponse<User>> => {
   return axios.post<User>(`${apiUrl}user/${userId}/offset`, {
-    offset: newOffset
+    offset: newOffset,
+    timezone: newTimezone
   }, {
     headers: {
       Authorization: `Bearer ${token}`,

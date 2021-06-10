@@ -4,4 +4,5 @@ export interface User {
   surname: string;
   email: string;
   timeOffset: number;
+  timezone: string;
 }

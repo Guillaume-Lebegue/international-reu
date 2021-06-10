@@ -16,9 +16,9 @@ router.post("/", async (ctx) => {
 
   const body = await ctx.request.body({ type: "json" }).value;
 
-  const { email, name, surname, timeOffset } = body;
+  const { email, name, surname, timeOffset, timezone } = body;
 
-  await createUser(ctx, { email, name, surname, timeOffset });
+  await createUser(ctx, { email, name, surname, timeOffset, timezone });
 });
 
 router.get("/", async (ctx) => {
@@ -38,9 +38,9 @@ router.post("/:id/offset", async (ctx) => {
 
   const body = await ctx.request.body({ type: "json" }).value;
 
-  const { offset } = body;
+  const { offset, timezone } = body;
 
-  await updateOffset(ctx, userId, offset);
+  await updateOffset(ctx, userId, offset, timezone);
 });
 
 export default router;

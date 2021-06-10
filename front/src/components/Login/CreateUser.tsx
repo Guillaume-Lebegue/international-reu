@@ -43,6 +43,7 @@ export default function CreateUser({ onClose }: Props): JSX.Element {
         surname,
         email,
         timeOffset: numOffset,
+        timezone: offset,
       });
       onClose();
     } catch (err) {

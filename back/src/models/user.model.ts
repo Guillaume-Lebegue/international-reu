@@ -10,10 +10,7 @@ class User extends Model {
     surname: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
     timeOffset: { type: DataTypes.INTEGER, allowNull: false },
-  };
-
-  static defaults = {
-    timeOffset: 0,
+    timezone: { type: DataTypes.STRING, allowNull: false },
   };
 }
 
@@ -23,6 +20,7 @@ export interface JsonUser {
   surname: string;
   email: string;
   timeOffset: number;
+  timezone: string;
 }
 
 export default User;

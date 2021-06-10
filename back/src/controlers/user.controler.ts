@@ -6,7 +6,7 @@ import { send } from "../utils.ts";
 export const createUser = async (ctx: RouterContext, newUser: JsonUser) => {
   if (
     !newUser.email || !newUser.name || !newUser.surname ||
-    newUser.timeOffset === undefined
+    newUser.timeOffset === undefined || !newUser.timezone
   ) {
     return send(ctx, 400, "Missing parameter");
   }
@@ -20,6 +20,7 @@ export const createUser = async (ctx: RouterContext, newUser: JsonUser) => {
   user.name = newUser.name;
   user.surname = newUser.surname;
   user.timeOffset = newUser.timeOffset;
+  user.timezone = newUser.timezone;
 
   try {
     const created = await user.save();
@@ -60,8 +61,11 @@ export const updateOffset = async (
   ctx: RouterContext,
   userId?: string,
   newOffset?: number,
+  newTimezone?: string,
 ) => {
-  if (!userId || !newOffset) return send(ctx, 400, "Missing parameter");
+  if (!userId || !newOffset || !newTimezone) {
+    return send(ctx, 400, "Missing parameter");
+  }
 
   const user = await User.where("_id", userId).first();
 
@@ -71,6 +75,7 @@ export const updateOffset = async (
 
   try {
     user.timeOffset = newOffset;
+    user.timezone = newTimezone;
     user.save();
     return send(ctx, 200, user);
   } catch (err) {
